@@ -35,4 +35,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-package-lock.json
+
+# Hostinger deploy archive (built locally with `git archive`, never committed)
+deploy/
+
+# Local secrets — never commit
+railway key.txt
+*.key.txt
