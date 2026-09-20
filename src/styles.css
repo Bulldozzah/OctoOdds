@@ -1,0 +1,214 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system: "SkyBet" — sky blue + white sportsbook theme.
+ * All colors are oklch semantic tokens. Never hardcode colors in components.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-sky: var(--sky);
+  --color-sky-soft: var(--sky-soft);
+  --color-sky-deep: var(--sky-deep);
+  --color-navy: var(--navy);
+  --color-navy-foreground: var(--navy-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-live: var(--live);
+  --color-odds-up: var(--odds-up);
+  --color-odds-down: var(--odds-down);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --shadow-card: 0 1px 2px oklch(0.45 0.13 245 / 0.06), 0 12px 28px -18px oklch(0.45 0.13 245 / 0.35);
+  --shadow-lift: 0 18px 40px -20px oklch(0.45 0.13 245 / 0.45);
+  --shadow-glow: 0 0 0 1px oklch(0.72 0.13 232 / 0.35), 0 10px 30px -12px oklch(0.72 0.13 232 / 0.55);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  --background: oklch(0.985 0.008 235);
+  --foreground: oklch(0.245 0.055 258);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.245 0.055 258);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.245 0.055 258);
+
+  --primary: oklch(0.615 0.155 245);
+  --primary-foreground: oklch(0.995 0.005 240);
+
+  --secondary: oklch(0.945 0.026 238);
+  --secondary-foreground: oklch(0.34 0.088 253);
+
+  --muted: oklch(0.958 0.016 238);
+  --muted-foreground: oklch(0.545 0.045 251);
+
+  --accent: oklch(0.905 0.055 232);
+  --accent-foreground: oklch(0.3 0.082 255);
+
+  --destructive: oklch(0.585 0.215 22);
+  --destructive-foreground: oklch(0.99 0.005 240);
+
+  --border: oklch(0.905 0.028 238);
+  --input: oklch(0.905 0.028 238);
+  --ring: oklch(0.68 0.135 238);
+
+  /* Blue variances */
+  --warning: oklch(0.79 0.15 78);
+  --warning-foreground: oklch(0.36 0.09 62);
+
+  --sky: oklch(0.755 0.125 231);
+  --sky-soft: oklch(0.925 0.048 231);
+  --sky-deep: oklch(0.535 0.16 250);
+  --navy: oklch(0.295 0.085 258);
+  --navy-foreground: oklch(0.975 0.012 235);
+
+  --success: oklch(0.635 0.145 158);
+  --success-foreground: oklch(0.99 0.005 160);
+  --live: oklch(0.615 0.215 20);
+  --odds-up: oklch(0.615 0.14 158);
+  --odds-down: oklch(0.6 0.2 22);
+
+  --gradient-sky: linear-gradient(135deg, oklch(0.535 0.16 250), oklch(0.755 0.125 231));
+  --gradient-pitch: linear-gradient(160deg, oklch(0.3 0.09 258), oklch(0.45 0.145 248) 55%, oklch(0.615 0.14 232));
+  --gradient-soft: linear-gradient(180deg, oklch(0.975 0.02 235), oklch(1 0 0));
+
+  --chart-1: oklch(0.615 0.155 245);
+  --chart-2: oklch(0.755 0.125 231);
+  --chart-3: oklch(0.535 0.16 250);
+  --chart-4: oklch(0.295 0.085 258);
+  --chart-5: oklch(0.865 0.07 228);
+
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.245 0.055 258);
+  --sidebar-primary: oklch(0.615 0.155 245);
+  --sidebar-primary-foreground: oklch(0.995 0.005 240);
+  --sidebar-accent: oklch(0.945 0.03 235);
+  --sidebar-accent-foreground: oklch(0.3 0.082 255);
+  --sidebar-border: oklch(0.905 0.028 238);
+  --sidebar-ring: oklch(0.68 0.135 238);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+@utility bg-gradient-sky {
+  background-image: var(--gradient-sky);
+}
+
+@utility bg-gradient-pitch {
+  background-image: var(--gradient-pitch);
+}
+
+@utility bg-gradient-soft {
+  background-image: var(--gradient-soft);
+}
+
+@utility text-gradient-sky {
+  background-image: var(--gradient-sky);
+  background-clip: text;
+  color: transparent;
+}
+
+@utility live-dot {
+  position: relative;
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 9999px;
+    background: var(--live);
+    margin-right: 0.4rem;
+    animation: pulse-live 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse-live {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+}
+
+@utility ticker-track {
+  animation: ticker 32s linear infinite;
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
