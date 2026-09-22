@@ -176,7 +176,7 @@ function StatTile({
 function Card({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <section
-      className={cn("min-w-0 rounded-2xl border border-border bg-card p-4 shadow-card", className)}
+      className={cn("min-w-0 rounded-xl border border-border bg-card p-4 shadow-card", className)}
     >
       {children}
     </section>
@@ -676,7 +676,7 @@ function ValueTab({
         </Card>
       ) : (
         <>
-          <div className="flex flex-wrap items-baseline gap-x-2 rounded-2xl border border-border bg-card px-4 py-2 shadow-card">
+          <div className="flex flex-wrap items-baseline gap-x-2 rounded-xl border border-border bg-card px-4 py-2 shadow-card">
             <span className="font-display text-lg font-extrabold leading-none text-primary">
               {visible.length}
             </span>

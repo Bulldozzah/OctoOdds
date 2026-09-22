@@ -231,12 +231,12 @@ function MyBetsPage() {
         </div>
 
         {loading ? (
-          <div className="mt-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-card">
+          <div className="mt-6 flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-card">
             <span className="size-4 animate-spin rounded-full border-2 border-border border-t-primary" />
             Loading…
           </div>
         ) : bets.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-dashed border-border p-10 text-center">
+          <div className="mt-8 rounded-xl border border-dashed border-border p-10 text-center">
             <p className="text-sm text-muted-foreground">
               Nothing saved yet. Build a plan in the calculator and hit “Save bet”.
             </p>
@@ -245,7 +245,7 @@ function MyBetsPage() {
             </Button>
           </div>
         ) : visible.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+          <div className="mt-8 rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
             No {filter === "all" ? "" : OUTCOME_LABEL[filter].toLowerCase()} bets. Change the filter
             to see the rest.
           </div>
@@ -261,7 +261,7 @@ function MyBetsPage() {
               return (
                 <article
                   key={bet.id}
-                  className="rounded-2xl border border-border bg-card p-4 shadow-card"
+                  className="rounded-xl border border-border bg-card p-4 shadow-card"
                 >
                   <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                     <div className="min-w-0">

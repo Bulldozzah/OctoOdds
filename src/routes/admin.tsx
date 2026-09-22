@@ -135,12 +135,12 @@ function AdminPage() {
         )}
 
         {loading ? (
-          <div className="mt-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-card">
+          <div className="mt-6 flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-card">
             <span className="size-4 animate-spin rounded-full border-2 border-border border-t-primary" />
             Loading…
           </div>
         ) : visible.length === 0 ? (
-          <div className="mt-6 rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+          <div className="mt-6 rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
             No users in “{filter}”.
           </div>
         ) : (
@@ -179,7 +179,7 @@ function MemberRow({
   const noPayNeeded = p.role === "admin" || p.role === "superuser";
 
   return (
-    <li className="rounded-2xl border border-border bg-card p-4 shadow-card">
+    <li className="rounded-xl border border-border bg-card p-4 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gradient-sky text-sm font-bold text-primary-foreground">

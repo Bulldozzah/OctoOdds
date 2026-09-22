@@ -275,7 +275,7 @@ function Card({
   return (
     <section
       title={hint}
-      className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-card"
+      className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-card"
     >
       <h2 className="font-display text-sm font-semibold">{title}</h2>
       <div className="mt-3">{children}</div>
@@ -879,7 +879,7 @@ function ScannerPage() {
         )}
 
         {/* Tab bar + sport + bookmakers */}
-        <div className="mt-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-card">
+        <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-card">
           <div className="flex w-full flex-wrap rounded-xl bg-muted p-1 sm:w-auto" role="tablist">
             {TABS.map((t) => (
               <button
@@ -1284,7 +1284,7 @@ function ScannerPage() {
           {/* ----------------------------------------------- results column */}
           <div className="min-w-0 space-y-4">
             {!activeGames ? (
-              <div className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+              <div className="rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
                 No scan yet. Choose a league or a date on the left, then press{" "}
                 <strong>Scan live odds</strong> — or try <strong>Demo</strong> to see the workflow
                 without spending API credits.
@@ -1292,7 +1292,7 @@ function ScannerPage() {
             ) : (
               <>
                 {/* Scan meta */}
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-1 rounded-2xl border border-border bg-gradient-soft p-3 text-xs text-muted-foreground shadow-card">
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-1 rounded-xl border border-border bg-gradient-soft p-3 text-xs text-muted-foreground shadow-card">
                   <span>
                     {scanTab === "date"
                       ? `Live odds · ${
@@ -1376,7 +1376,7 @@ function ScannerPage() {
                       {arbs.map((a) => (
                         <div
                           key={a.game.id}
-                          className="rounded-2xl border border-success/40 bg-success/10 p-4"
+                          className="rounded-xl border border-success/40 bg-success/10 p-4"
                         >
                           <div className="flex items-center justify-between gap-2">
                             <p className="font-semibold">
@@ -1428,7 +1428,7 @@ function ScannerPage() {
                   </h2>
 
                   {visiblePairs.length === 0 ? (
-                    <div className="mt-2 rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+                    <div className="mt-2 rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
                       {activeGames.length === 0 &&
                       fresh &&
                       fresh.started + fresh.unpriced > 0 &&
@@ -1465,7 +1465,7 @@ function ScannerPage() {
                           <li
                             key={`${r.games.map((g) => g.id).join("-")}-${r.bookLabel}-${idx}`}
                             className={cn(
-                              "rounded-2xl border border-border bg-card p-4 shadow-card",
+                              "rounded-xl border border-border bg-card p-4 shadow-card",
                               r.fullCover && "border-success/40 bg-success/5",
                             )}
                           >

@@ -102,7 +102,7 @@ function ProfilePage() {
           </Alert>
         )}
 
-        <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-card">
+        <div className="mt-6 rounded-xl border border-border bg-card p-6 shadow-card">
           <div className="flex flex-wrap items-center gap-4">
             <span className="grid size-14 shrink-0 place-items-center rounded-full bg-gradient-sky text-xl font-bold text-primary-foreground">
               {displayName.charAt(0).toUpperCase()}

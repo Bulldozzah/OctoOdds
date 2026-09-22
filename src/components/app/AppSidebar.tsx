@@ -21,6 +21,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
 
@@ -129,6 +130,9 @@ export function AppSidebar() {
           <span className="group-data-[collapsible=icon]:hidden">Sign out</span>
         </Button>
       </SidebarFooter>
+      {/* Click the sidebar's right edge to collapse/expand — keeps the
+          expandable behaviour available outside the header trigger too. */}
+      <SidebarRail />
     </Sidebar>
   );
 }

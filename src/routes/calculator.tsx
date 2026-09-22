@@ -107,7 +107,7 @@ function Fieldset({
   action?: React.ReactNode;
 }) {
   return (
-    <fieldset className="rounded-2xl border border-border bg-card p-4 pt-3 shadow-sm">
+    <fieldset className="rounded-xl border border-border bg-card p-4 pt-3 shadow-card">
       <div className="flex items-center justify-between gap-2">
         <legend className="px-1 font-display text-sm font-semibold">{legend}</legend>
         {action}
@@ -570,7 +570,7 @@ function CalculatorPage() {
 
         <div className="mt-6 grid min-w-0 gap-5 xl:grid-cols-[380px_minmax(0,1fr)]">
           {/* ----------------------------------------------- controls column */}
-          <aside className="relative h-fit min-w-0 rounded-2xl border border-border bg-muted p-4 shadow-card xl:sticky xl:top-6">
+          <aside className="relative h-fit min-w-0 rounded-xl border border-border bg-muted p-4 shadow-card xl:sticky xl:top-6">
             <div className="space-y-4">
               <Fieldset legend="Budget">
                 <div className="flex flex-wrap items-end gap-3">
@@ -790,7 +790,7 @@ function CalculatorPage() {
           </aside>
 
           {/* ------------------------------------------ scenario table column */}
-          <section className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+          <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-card">
             {matchInfoText && (
               <div className="border-b border-border bg-sky-soft/50 px-3 py-2 text-xs text-muted-foreground">
                 {matchInfoText}

@@ -101,7 +101,7 @@ function Card({
 }) {
   return (
     <section
-      className={cn("min-w-0 rounded-2xl border border-border bg-card p-4 shadow-card", className)}
+      className={cn("min-w-0 rounded-xl border border-border bg-card p-4 shadow-card", className)}
     >
       <h2 className="font-display text-sm font-semibold">{title}</h2>
       <div className="mt-3">{children}</div>
@@ -112,7 +112,7 @@ function Card({
 function Kpi({ label, value, tone }: { label: string; value: string; tone?: number }) {
   const color = tone === undefined ? "" : tone >= 0 ? "text-odds-up" : "text-odds-down";
   return (
-    <div className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-card">
+    <div className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-card">
       <p className="truncate text-xs text-muted-foreground">{label}</p>
       <p className={cn("mt-1 font-display text-xl font-bold", color)}>{value}</p>
     </div>
@@ -326,7 +326,7 @@ function StatsPage() {
           How to record stats
         </button>
         {showHelp && (
-          <div className="mt-3 rounded-2xl border border-border bg-card p-4 shadow-card">
+          <div className="mt-3 rounded-xl border border-border bg-card p-4 shadow-card">
             <ol className="grid gap-3 sm:grid-cols-2">
               {STEPS.map((s, i) => (
                 <li key={s.title} className="flex gap-3">
@@ -349,12 +349,12 @@ function StatsPage() {
         )}
 
         {loading ? (
-          <div className="mt-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-card">
+          <div className="mt-6 flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-card">
             <span className="size-4 animate-spin rounded-full border-2 border-border border-t-primary" />
             Loading…
           </div>
         ) : stats.betsCount === 0 ? (
-          <div className="mt-8 rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+          <div className="mt-8 rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
             No bets in this period. Save one from the Calculator, then settle it under My bets.
           </div>
         ) : (

@@ -64,8 +64,8 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --shadow-card: 0 1px 2px oklch(0.45 0.13 245 / 0.06), 0 12px 28px -18px oklch(0.45 0.13 245 / 0.35);
-  --shadow-lift: 0 18px 40px -20px oklch(0.45 0.13 245 / 0.45);
+  --shadow-card: 0 1px 2px 0 oklch(0.45 0.13 245 / 0.05), 0 1px 3px 0 oklch(0.45 0.13 245 / 0.08);
+  --shadow-lift: 0 4px 6px -1px oklch(0.45 0.13 245 / 0.12), 0 2px 4px -2px oklch(0.45 0.13 245 / 0.1);
   --shadow-glow: 0 0 0 1px oklch(0.72 0.13 232 / 0.35), 0 10px 30px -12px oklch(0.72 0.13 232 / 0.55);
 }
 
@@ -153,6 +153,18 @@
   h4 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
+  }
+}
+
+/*
+ * Dashboard card shadow: flat at rest, gently lifts on hover — the container
+ * style used across stat tiles, list rows and content panels.
+ */
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+  &:hover {
+    box-shadow: var(--shadow-lift);
   }
 }
 
