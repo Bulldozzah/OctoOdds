@@ -1,4 +1,4 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   BarChart3,
   Calculator,
@@ -9,20 +9,13 @@ import {
   Ticket,
   User,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
-} from "@/components/ui/sidebar";
+  DashboardSidebar,
+  SidebarOption,
+  SidebarSection,
+  SidebarTitleSection,
+  SidebarToggleClose,
+} from "@/components/ui/dashboard-with-collapsible-sidebar";
 import { useAuth } from "@/lib/auth";
 
 const items = [
@@ -36,16 +29,16 @@ const items = [
   { title: "Admin", url: "/admin", icon: ShieldCheck, adminOnly: true },
 ] as const;
 
-/** Up to two initials from the display name, e.g. "Abel Chilungu" -> "AC". */
-const initialsOf = (source: string) =>
-  source
-    .split(/[\s@._-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((s) => s[0]!.toUpperCase())
-    .join("") || "?";
-
-export function AppSidebar() {
+export function AppSidebar({
+  open,
+  onToggle,
+  onNavigate,
+}: {
+  open: boolean;
+  onToggle: () => void;
+  /** Called after any nav/sign-out click — lets the mobile drawer close. */
+  onNavigate?: () => void;
+}) {
   const { user, profile, isAdmin, isSuperuser, hasAccess, signOut } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (r) => r.location.pathname });
@@ -66,73 +59,41 @@ export function AppSidebar() {
   const visible = items.filter((item) => !("adminOnly" in item && item.adminOnly) || isAdmin);
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <Link to="/" className="flex items-center gap-2 px-1 py-1.5">
-          {/* Collapsed to icons: the wordmark won't fit, so crop to the octopus. */}
-          <span className="hidden size-8 shrink-0 place-items-center overflow-hidden rounded-lg group-data-[collapsible=icon]:grid">
-            <img
-              src="/octoodds-logo.png"
-              alt=""
-              aria-hidden="true"
-              className="size-full scale-[1.9] object-contain"
-            />
-          </span>
-          <span className="flex min-w-0 flex-col gap-0.5 group-data-[collapsible=icon]:hidden">
-            <img src="/octoodds-logo.png" alt="OctoOdds" className="h-8 w-auto self-start" />
-            <span className="text-[11px] leading-tight text-muted-foreground">Even the Odds</span>
-          </span>
-        </Link>
-      </SidebarHeader>
+    <DashboardSidebar open={open}>
+      <SidebarTitleSection open={open} title={displayName} subtitle={roleLabel} />
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Tools</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {visible.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
-                    <Link to={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+      <div className="mb-8 space-y-1">
+        {visible.map((item) => (
+          <SidebarOption
+            key={item.title}
+            icon={item.icon}
+            title={item.title}
+            to={item.url}
+            selected={pathname === item.url}
+            open={open}
+            onClick={onNavigate}
+          />
+        ))}
+      </div>
 
-      <SidebarFooter>
-        <div className="flex items-center gap-2 rounded-lg border border-sidebar-border p-2 group-data-[collapsible=icon]:hidden">
-          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-sky-soft text-xs font-semibold">
-            {initialsOf(displayName)}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium">{displayName}</p>
-            <p className="truncate text-xs text-muted-foreground">{roleLabel}</p>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full justify-start group-data-[collapsible=icon]:justify-center"
-          onClick={() => {
-            void (async () => {
-              await signOut();
-              void navigate({ to: "/", replace: true });
-            })();
-          }}
-        >
-          <LogOut className="size-4" />
-          <span className="group-data-[collapsible=icon]:hidden">Sign out</span>
-        </Button>
-      </SidebarFooter>
-      {/* Click the sidebar's right edge to collapse/expand — keeps the
-          expandable behaviour available outside the header trigger too. */}
-      <SidebarRail />
-    </Sidebar>
+      <div className="mt-auto">
+        <SidebarSection open={open} label="Account">
+          <SidebarOption
+            icon={LogOut}
+            title="Sign out"
+            open={open}
+            onClick={() => {
+              void (async () => {
+                await signOut();
+                onNavigate?.();
+                void navigate({ to: "/", replace: true });
+              })();
+            }}
+          />
+        </SidebarSection>
+      </div>
+
+      <SidebarToggleClose open={open} onToggle={onToggle} />
+    </DashboardSidebar>
   );
 }

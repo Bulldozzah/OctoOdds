@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
 import {
   Bar,
   BarChart,
@@ -14,7 +14,20 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ChevronDown, ChevronRight, Download } from "lucide-react";
+import {
+  Banknote,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  Coins,
+  Download,
+  Percent,
+  Scale,
+  Target,
+  Ticket,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { ProtectedRoute } from "@/components/app/protected-route";
 import { Alert } from "@/components/app/auth-shell";
@@ -109,10 +122,29 @@ function Card({
   );
 }
 
-function Kpi({ label, value, tone }: { label: string; value: string; tone?: number }) {
+function Kpi({
+  label,
+  value,
+  tone,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  tone?: number;
+  icon: ComponentType<{ className?: string }>;
+}) {
   const color = tone === undefined ? "" : tone >= 0 ? "text-odds-up" : "text-odds-down";
+  const Trend = tone === undefined || tone >= 0 ? TrendingUp : TrendingDown;
   return (
     <div className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-card">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="rounded-lg bg-sky-soft p-2">
+          <Icon className="h-4 w-4 text-primary" />
+        </div>
+        {tone !== undefined && (
+          <Trend className={cn("h-4 w-4", tone >= 0 ? "text-odds-up" : "text-odds-down")} />
+        )}
+      </div>
       <p className="truncate text-xs text-muted-foreground">{label}</p>
       <p className={cn("mt-1 font-display text-xl font-bold", color)}>{value}</p>
     </div>
@@ -360,22 +392,30 @@ function StatsPage() {
         ) : (
           <>
             <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Kpi label="Total bets" value={String(stats.betsCount)} />
-              <Kpi label="Total staked" value={fmt(stats.totalStaked)} />
-              <Kpi label="Returns (settled)" value={fmt(stats.totalReturns)} />
+              <Kpi label="Total bets" value={String(stats.betsCount)} icon={Ticket} />
+              <Kpi label="Total staked" value={fmt(stats.totalStaked)} icon={Coins} />
+              <Kpi label="Returns (settled)" value={fmt(stats.totalReturns)} icon={Banknote} />
               <Kpi
                 label="Net profit (settled)"
                 value={fmt(stats.netProfit)}
                 tone={stats.netProfit}
+                icon={TrendingUp}
               />
-              <Kpi label="ROI (settled)" value={`${stats.roi.toFixed(1)}%`} tone={stats.roi} />
-              <Kpi label="Pending exposure" value={fmt(stats.pendingStaked)} />
+              <Kpi
+                label="ROI (settled)"
+                value={`${stats.roi.toFixed(1)}%`}
+                tone={stats.roi}
+                icon={Percent}
+              />
+              <Kpi label="Pending exposure" value={fmt(stats.pendingStaked)} icon={Clock} />
               <Kpi
                 label="W / L / Pending"
                 value={`${stats.wins} / ${stats.losses} / ${stats.pendingCount}`}
+                icon={Scale}
               />
               <Kpi
                 label="Win rate (settled)"
+                icon={Target}
                 value={
                   stats.wins + stats.losses > 0
                     ? `${((stats.wins / (stats.wins + stats.losses)) * 100).toFixed(0)}%`
