@@ -1,11 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { addMonths } from "date-fns";
-import { Check, Crown, ShieldCheck, User as UserIcon, X } from "lucide-react";
+import { Check, Crown, Lock, LockOpen, ShieldCheck, User as UserIcon, X } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { ProtectedRoute } from "@/components/app/protected-route";
 import { Alert } from "@/components/app/auth-shell";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useAuth } from "@/lib/auth";
 import {
   supabase,
   hasPaidAccess,
@@ -127,6 +139,8 @@ function AdminPage() {
             ))}
           </div>
         </div>
+
+        <PaywallCard />
 
         {error && (
           <Alert tone="error" className="mt-4">
@@ -253,6 +267,117 @@ function MemberRow({
         </div>
       )}
     </li>
+  );
+}
+
+/**
+ * Global paywall switch. Free-access mode lets every signed-in user in; paid
+ * status on profiles is never touched, so turning the paywall back on restores
+ * exactly who had paid before.
+ */
+function PaywallCard() {
+  const { user, paywallEnabled, refreshSettings } = useAuth();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const freeMode = !paywallEnabled;
+
+  const apply = async () => {
+    setBusy(true);
+    setError("");
+    const { error: updateError } = await supabase
+      .from("app_settings")
+      .update({
+        bool_value: !paywallEnabled,
+        updated_at: new Date().toISOString(),
+        updated_by: user?.id ?? null,
+      })
+      .eq("key", "paywall_enabled");
+    setBusy(false);
+    if (updateError) setError(updateError.message);
+    else await refreshSettings();
+  };
+
+  return (
+    <div
+      className={cn(
+        "mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-card p-4 shadow-card",
+        freeMode &&
+          "border-destructive/60 shadow-[0_0_28px_-4px_var(--color-destructive)]",
+      )}
+    >
+      <div className="flex min-w-0 items-center gap-3">
+        <span
+          className={cn(
+            "grid size-10 shrink-0 place-items-center rounded-lg",
+            freeMode ? "bg-destructive/15 text-destructive" : "bg-sky-soft text-primary",
+          )}
+        >
+          {freeMode ? <LockOpen className="size-5" /> : <Lock className="size-5" />}
+        </span>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <strong>Site access</strong>
+            <span
+              className={cn(
+                "rounded-full px-2 py-0.5 text-xs font-bold",
+                freeMode ? "bg-destructive/15 text-destructive" : "bg-success/15 text-success",
+              )}
+            >
+              {freeMode ? "Free access — paywall OFF" : "Payment required"}
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {freeMode
+              ? "Everyone who signs in can use the app without paying."
+              : "Unpaid users are sent to the payment page. Members who paid keep access."}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground">
+          {freeMode ? "Paywall off" : "Paywall on"}
+        </span>
+        <Switch
+          checked={paywallEnabled}
+          disabled={busy}
+          onCheckedChange={() => setConfirmOpen(true)}
+          className={cn(freeMode && "shadow-[0_0_12px_2px_var(--color-destructive)]")}
+          aria-label="Toggle paywall"
+        />
+      </div>
+
+      {error && (
+        <Alert tone="error" className="w-full">
+          {error}
+        </Alert>
+      )}
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {freeMode ? "Re-enable the paywall?" : "Enable free access for everyone?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {freeMode
+                ? "Unpaid users will be sent to the payment page. Members who already paid keep their access — paid status is stored on each profile and is never wiped by this switch."
+                : "Every registered user will be able to use the whole app without paying — useful for launch promos and free trials. You can switch the paywall back on here at any time."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void apply()}
+              className={cn(freeMode ? "" : "bg-destructive text-destructive-foreground hover:bg-destructive/90")}
+            >
+              {freeMode ? "Yes, enable paywall" : "Yes, free access"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }
 

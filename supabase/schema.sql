@@ -97,6 +97,23 @@ alter table public.bets
 
 create index if not exists bets_user_id_idx on public.bets (user_id);
 
+-- ------------------------------------------------------------ app_settings ---
+-- Key/value feature flags readable by anyone (they shape the public UI), but
+-- only admins may change them. `paywall_enabled = false` means free-access
+-- mode: every signed-in user passes the paywall until it is turned back on.
+-- Paid status is stored on each profile and is never touched by this switch,
+-- so members who paid keep their access when the paywall returns.
+create table if not exists public.app_settings (
+  key         text        primary key,
+  bool_value  boolean     not null,
+  updated_at  timestamptz not null default now(),
+  updated_by  uuid        references auth.users (id)
+);
+
+insert into public.app_settings (key, bool_value)
+values ('paywall_enabled', false)
+on conflict (key) do nothing;
+
 -- ----------------------------------------------------------------- helpers ---
 -- Is the caller an admin? SECURITY DEFINER so it reads profiles without RLS,
 -- which both lets it work inside a profiles policy and avoids recursion.
@@ -175,8 +192,9 @@ create trigger profiles_guard_privileged_fields
   for each row execute function public.profiles_guard_privileged_fields();
 
 -- --------------------------------------------------------------------- RLS ---
-alter table public.profiles enable row level security;
-alter table public.bets     enable row level security;
+alter table public.profiles     enable row level security;
+alter table public.bets         enable row level security;
+alter table public.app_settings enable row level security;
 
 -- Everything here is behind sign-in; grant CRUD to authenticated and let RLS
 -- narrow it to the caller's own rows. anon gets nothing.
@@ -184,6 +202,10 @@ grant usage on schema public to authenticated;
 grant select, insert, update, delete on public.profiles to authenticated;
 grant select, insert, update, delete on public.bets     to authenticated;
 grant execute on function public.is_admin() to authenticated;
+-- Settings are world-readable (the paywall state is visible in the UI anyway);
+-- writes are gated to admins by RLS.
+grant select on public.app_settings to anon, authenticated;
+grant update on public.app_settings to authenticated;
 
 -- profiles: read/update your own row; admins may read and update everyone.
 -- (Inserts happen through the signup trigger, so no insert policy is needed.)
@@ -212,6 +234,15 @@ create policy bets_update on public.bets
 drop policy if exists bets_delete on public.bets;
 create policy bets_delete on public.bets
   for delete using (user_id = auth.uid());
+
+-- app_settings: everyone reads; only admins write.
+drop policy if exists app_settings_select on public.app_settings;
+create policy app_settings_select on public.app_settings
+  for select using (true);
+
+drop policy if exists app_settings_update on public.app_settings;
+create policy app_settings_update on public.app_settings
+  for update using (public.is_admin()) with check (public.is_admin());
 
 -- ----------------------------------------------------------- make an admin ---
 -- After you have signed up once, promote yourself by running (with your email):

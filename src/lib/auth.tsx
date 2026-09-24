@@ -17,11 +17,21 @@ interface AuthValue {
   isAdmin: boolean;
   isSuperuser: boolean;
   /**
-   * True when the account may use the app: admins and superusers always,
-   * paying users while their subscription is active.
+   * True when the account may use the app: while the paywall is on, admins
+   * and superusers always plus paying users with an active subscription;
+   * while free-access mode is on (paywall_enabled = false), everyone who is
+   * signed in.
    */
   hasAccess: boolean;
+  /**
+   * Global flag from app_settings — false means the admin turned the paywall
+   * off and every signed-in user gets in. Fail-closed: defaults to true and
+   * stays true if the settings row cannot be read.
+   */
+  paywallEnabled: boolean;
   refreshProfile: () => Promise<void>;
+  /** Re-read app_settings — called by the admin page after toggling. */
+  refreshSettings: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -40,6 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
+  // Fail closed: until the flag loads, behave as if the paywall is on.
+  const [paywallEnabled, setPaywallEnabled] = useState(true);
   // Starts true so server-rendered output and the first client paint agree:
   // both show the loading state, then the browser resolves the real session.
   const [loading, setLoading] = useState(true);
@@ -85,8 +97,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const loadSettings = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("app_settings")
+      .select("bool_value")
+      .eq("key", "paywall_enabled")
+      .single();
+    // Missing table/row or a read error must never silently unlock the app.
+    if (!error && data) setPaywallEnabled(data.bool_value as boolean);
+  }, []);
+
   useEffect(() => {
     let mounted = true;
+
+    void loadSettings();
 
     supabase.auth.getSession().then(async ({ data }) => {
       if (!mounted) return;
@@ -106,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       mounted = false;
       sub.subscription.unsubscribe();
     };
-  }, [loadProfile]);
+  }, [loadProfile, loadSettings]);
 
   const refreshProfile = useCallback(() => loadProfile(session?.user?.id), [loadProfile, session]);
 
@@ -124,8 +148,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profileError,
     isAdmin: profile?.role === "admin",
     isSuperuser: profile?.role === "superuser",
-    hasAccess: hasPaidAccess(profile),
+    hasAccess: !paywallEnabled || hasPaidAccess(profile),
+    paywallEnabled,
     refreshProfile,
+    refreshSettings: loadSettings,
     signOut,
   };
 

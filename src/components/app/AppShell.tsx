@@ -3,12 +3,14 @@ import { Link } from "@tanstack/react-router";
 import { Menu, User } from "lucide-react";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { ThemeToggle } from "@/components/app/theme-toggle";
+import { useAuth } from "@/lib/auth";
 
 const SIDEBAR_KEY = "octoodds-sidebar-open";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { paywallEnabled } = useAuth();
 
   useEffect(() => {
     try {
@@ -65,6 +67,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           </button>
           <img src="/octoodds-logo.png" alt="OctoOdds" className="h-7 w-auto" />
           <span className="hidden text-xs text-muted-foreground sm:inline">Even the Odds</span>
+          {!paywallEnabled && (
+            <span className="rounded-full bg-success/15 px-2 py-0.5 text-xs font-semibold text-success">
+              Free access
+            </span>
+          )}
           <div className="ml-auto flex items-center gap-3">
             <ThemeToggle />
             <Link
