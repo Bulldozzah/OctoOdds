@@ -2,6 +2,8 @@ import { createFileRoute, useNavigate, useRouterState } from "@tanstack/react-ro
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
+  ArrowDown,
+  ArrowUp,
   Calculator as CalculatorIcon,
   Download,
   Eraser,
@@ -739,15 +741,19 @@ function CalculatorPage() {
                   {winDiff !== null && (
                     <span
                       className={cn(
-                        "self-end rounded-full px-2.5 py-1 text-xs font-bold",
+                        "inline-flex items-center gap-1 self-end rounded-full px-2.5 py-1 text-xs font-bold",
                         winDiff >= 0
                           ? "bg-success/15 text-success"
                           : "bg-destructive/15 text-destructive",
                       )}
                       title="Difference between your budget and the balanced Total win"
                     >
-                      {winDiff >= 0 ? "+" : ""}
-                      {winDiff.toFixed(1)}% vs {toNumber(targetStake) > 0 ? "budget" : "stake"}
+                      {winDiff >= 0 ? (
+                        <ArrowUp className="size-3.5" />
+                      ) : (
+                        <ArrowDown className="size-3.5" />
+                      )}
+                      {Math.abs(winDiff).toFixed(1)}%
                     </span>
                   )}
                 </div>
