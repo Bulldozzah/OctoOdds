@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   Calculator as CalculatorIcon,
@@ -139,6 +139,12 @@ function CalculatorPage() {
     useState<ByTeams<OutcomeOddsInput[]>>(initialOutcomeOdds);
 
   const [targetWin, setTargetWin] = useState("");
+  // Percentage gap between the budget and the balanced Total win, shown next
+  // to the Balance win button after a successful balance.
+  const [winDiff, setWinDiff] = useState<number | null>(null);
+  // Set before the stake update a balance performs, so the clear-on-edit
+  // effect below doesn't wipe the badge it just produced.
+  const suppressWinDiffClear = useRef(false);
   // Which scenario the "Calculate" plan gives up: a row index as a string,
   // "all" to cover everything, or "best" to take whichever pays most.
   const [sacrifice, setSacrifice] = useState("best");
@@ -166,6 +172,17 @@ function CalculatorPage() {
   // Excluded rows carry no stake at all, so ticking one Unlikely is a no-op —
   // don't let them count towards the Turbo button's total.
   const unlikelyCount = rows.filter((row) => row.unlikely && !row.excluded).length;
+
+  // The win-diff badge quotes the inputs as they were at balance time — any
+  // later edit makes it stale, so hide it. The flag survives exactly the one
+  // rows update balanceWin itself performs.
+  useEffect(() => {
+    if (suppressWinDiffClear.current) {
+      suppressWinDiffClear.current = false;
+      return;
+    }
+    setWinDiff(null);
+  }, [rows, targetStake, targetWin]);
 
   // ------------------------------------------------------- correlation guard
 
@@ -254,6 +271,7 @@ function CalculatorPage() {
     setLoadedBetId(null);
     setSelectedRow(null);
     setTargetWin("");
+    setWinDiff(null);
     setSacrifice("best");
     setStatusMsg("Reset to defaults.");
   };
@@ -306,9 +324,16 @@ function CalculatorPage() {
     const res = balanceWinStakes(rows, targetStake, targetWin);
     if (!res.ok) {
       setStatusMsg(res.message);
+      setWinDiff(null);
       return;
     }
+    suppressWinDiffClear.current = true;
     setRows((prev) => prev.map((row, i) => ({ ...row, stake: String(res.stakes[i]) })));
+    // Gap between the budget and the balanced Total win. With no budget set,
+    // measure against what the balance actually staked.
+    const base = toNumber(targetStake) > 0 ? toNumber(targetStake) : res.total;
+    const win = toNumber(targetWin);
+    setWinDiff(base > 0 ? ((win - base) / base) * 100 : null);
     setStatusMsg(
       `Balanced Total win at ${fmt(toNumber(targetWin))} — staked ${fmt(res.total)}, remaining ${fmt(res.remaining)}.`,
     );
@@ -711,6 +736,20 @@ function CalculatorPage() {
                       onChange={(e) => setTargetWin(e.target.value)}
                     />
                   </div>
+                  {winDiff !== null && (
+                    <span
+                      className={cn(
+                        "self-end rounded-full px-2.5 py-1 text-xs font-bold",
+                        winDiff >= 0
+                          ? "bg-success/15 text-success"
+                          : "bg-destructive/15 text-destructive",
+                      )}
+                      title="Difference between your budget and the balanced Total win"
+                    >
+                      {winDiff >= 0 ? "+" : ""}
+                      {winDiff.toFixed(1)}% vs {toNumber(targetStake) > 0 ? "budget" : "stake"}
+                    </span>
+                  )}
                 </div>
 
                 {/*
