@@ -172,6 +172,13 @@ function CalculatorPage() {
   // don't let them count towards the Turbo button's total.
   const unlikelyCount = rows.filter((row) => row.unlikely && !row.excluded).length;
 
+  // Largest Total win the budget can actually deliver: W × Σ1/odds ≤ budget.
+  const maxWin = useMemo(() => {
+    const budget = toNumber(targetStake);
+    const sumInv = stakeableIdx(rows).reduce((a, i) => a + 1 / toNumber(rows[i].odds), 0);
+    return budget > 0 && sumInv > 0 ? budget / sumInv : null;
+  }, [targetStake, rows]);
+
   // Live readout inside the Total win field: how far the requested win sits
   // above/below the budget — or, with no budget set, above/below the stake the
   // balance would actually need (W × Σ1/odds over the eligible rows).
@@ -185,9 +192,12 @@ function CalculatorPage() {
     return ((w - w * sumInv) / (w * sumInv)) * 100;
   }, [targetWin, targetStake, rows]);
 
+  const clampWin = (value: number) =>
+    maxWin !== null && value > maxWin ? Math.floor(maxWin * 100) / 100 : value;
+
   const stepTargetWin = (delta: number) => {
     const next = Math.max(0, Math.round((toNumber(targetWin) + delta) * 100) / 100);
-    setTargetWin(String(next));
+    setTargetWin(String(clampWin(next)));
   };
 
   // ------------------------------------------------------- correlation guard
@@ -725,15 +735,39 @@ function CalculatorPage() {
                     {unlikelyCount > 0 ? ` (${unlikelyCount})` : ""}
                   </Button>
                   <div className="w-44 space-y-1">
-                    <Label htmlFor="target">Total win</Label>
+                    <Label htmlFor="target">
+                      Total win
+                      {maxWin !== null && (
+                        <span className="ml-1 font-normal text-muted-foreground">
+                          · max {fmt(Math.floor(maxWin * 100) / 100)}
+                        </span>
+                      )}
+                    </Label>
                     <div className="relative">
                       <Input
                         id="target"
                         inputMode="decimal"
                         placeholder="Total win"
                         value={targetWin}
-                        onChange={(e) => setTargetWin(e.target.value)}
-                        className="pr-20"
+                        onChange={(e) => {
+                          const n = toNumber(e.target.value);
+                          // The cap bites on the stepper and on a completed
+                          // number; partial input ("0.", "-") just passes through.
+                          if (maxWin !== null && n > maxWin)
+                            setTargetWin(String(Math.floor(maxWin * 100) / 100));
+                          else setTargetWin(e.target.value);
+                        }}
+                        className={cn(
+                          "pr-20",
+                          maxWin !== null &&
+                            toNumber(targetWin) > maxWin + 1e-9 &&
+                            "border-destructive text-destructive",
+                        )}
+                        title={
+                          maxWin !== null
+                            ? `The budget can deliver at most ${fmt(Math.floor(maxWin * 100) / 100)} total win at these odds`
+                            : undefined
+                        }
                       />
                       <div className="absolute inset-y-0 right-1 flex items-center gap-1">
                         {winDiff !== null && (
