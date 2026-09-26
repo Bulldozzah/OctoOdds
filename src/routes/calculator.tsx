@@ -1,10 +1,12 @@
 import { createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowDown,
   ArrowUp,
   Calculator as CalculatorIcon,
+  ChevronDown,
+  ChevronUp,
   Download,
   Eraser,
   RotateCcw,
@@ -53,6 +55,7 @@ import {
   scenarioOutcomes,
   scenarioTeams,
   sideWord,
+  stakeableIdx,
   toNumber,
   turboBalanceStakes,
   type OutcomeOddsInput,
@@ -141,12 +144,6 @@ function CalculatorPage() {
     useState<ByTeams<OutcomeOddsInput[]>>(initialOutcomeOdds);
 
   const [targetWin, setTargetWin] = useState("");
-  // Percentage gap between the budget and the balanced Total win, shown next
-  // to the Balance win button after a successful balance.
-  const [winDiff, setWinDiff] = useState<number | null>(null);
-  // Set before the stake update a balance performs, so the clear-on-edit
-  // effect below doesn't wipe the badge it just produced.
-  const suppressWinDiffClear = useRef(false);
   // Which scenario the "Calculate" plan gives up: a row index as a string,
   // "all" to cover everything, or "best" to take whichever pays most.
   const [sacrifice, setSacrifice] = useState("best");
@@ -175,16 +172,23 @@ function CalculatorPage() {
   // don't let them count towards the Turbo button's total.
   const unlikelyCount = rows.filter((row) => row.unlikely && !row.excluded).length;
 
-  // The win-diff badge quotes the inputs as they were at balance time — any
-  // later edit makes it stale, so hide it. The flag survives exactly the one
-  // rows update balanceWin itself performs.
-  useEffect(() => {
-    if (suppressWinDiffClear.current) {
-      suppressWinDiffClear.current = false;
-      return;
-    }
-    setWinDiff(null);
-  }, [rows, targetStake, targetWin]);
+  // Live readout inside the Total win field: how far the requested win sits
+  // above/below the budget — or, with no budget set, above/below the stake the
+  // balance would actually need (W × Σ1/odds over the eligible rows).
+  const winDiff = useMemo(() => {
+    const w = toNumber(targetWin);
+    if (!(w > 0)) return null;
+    const budget = toNumber(targetStake);
+    if (budget > 0) return ((w - budget) / budget) * 100;
+    const sumInv = stakeableIdx(rows).reduce((a, i) => a + 1 / toNumber(rows[i].odds), 0);
+    if (!(sumInv > 0)) return null;
+    return ((w - w * sumInv) / (w * sumInv)) * 100;
+  }, [targetWin, targetStake, rows]);
+
+  const stepTargetWin = (delta: number) => {
+    const next = Math.max(0, Math.round((toNumber(targetWin) + delta) * 100) / 100);
+    setTargetWin(String(next));
+  };
 
   // ------------------------------------------------------- correlation guard
 
@@ -273,7 +277,6 @@ function CalculatorPage() {
     setLoadedBetId(null);
     setSelectedRow(null);
     setTargetWin("");
-    setWinDiff(null);
     setSacrifice("best");
     setStatusMsg("Reset to defaults.");
   };
@@ -326,16 +329,9 @@ function CalculatorPage() {
     const res = balanceWinStakes(rows, targetStake, targetWin);
     if (!res.ok) {
       setStatusMsg(res.message);
-      setWinDiff(null);
       return;
     }
-    suppressWinDiffClear.current = true;
     setRows((prev) => prev.map((row, i) => ({ ...row, stake: String(res.stakes[i]) })));
-    // Gap between the budget and the balanced Total win. With no budget set,
-    // measure against what the balance actually staked.
-    const base = toNumber(targetStake) > 0 ? toNumber(targetStake) : res.total;
-    const win = toNumber(targetWin);
-    setWinDiff(base > 0 ? ((win - base) / base) * 100 : null);
     setStatusMsg(
       `Balanced Total win at ${fmt(toNumber(targetWin))} — staked ${fmt(res.total)}, remaining ${fmt(res.remaining)}.`,
     );
@@ -728,34 +724,59 @@ function CalculatorPage() {
                     <Zap className="size-3.5" /> Turbo
                     {unlikelyCount > 0 ? ` (${unlikelyCount})` : ""}
                   </Button>
-                  <div className="w-28 space-y-1">
+                  <div className="w-44 space-y-1">
                     <Label htmlFor="target">Total win</Label>
-                    <Input
-                      id="target"
-                      inputMode="decimal"
-                      placeholder="Total win"
-                      value={targetWin}
-                      onChange={(e) => setTargetWin(e.target.value)}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="target"
+                        inputMode="decimal"
+                        placeholder="Total win"
+                        value={targetWin}
+                        onChange={(e) => setTargetWin(e.target.value)}
+                        className="pr-20"
+                      />
+                      <div className="absolute inset-y-0 right-1 flex items-center gap-1">
+                        {winDiff !== null && (
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+                              winDiff >= 0
+                                ? "bg-success/15 text-success"
+                                : "bg-destructive/15 text-destructive",
+                            )}
+                            title="Difference between your budget and the requested Total win"
+                          >
+                            {winDiff >= 0 ? (
+                              <ArrowUp className="size-3" />
+                            ) : (
+                              <ArrowDown className="size-3" />
+                            )}
+                            {Math.abs(winDiff).toFixed(0)}%
+                          </span>
+                        )}
+                        <div className="flex flex-col">
+                          <button
+                            type="button"
+                            tabIndex={-1}
+                            aria-label="Increase total win"
+                            onClick={() => stepTargetWin(10)}
+                            className="text-muted-foreground transition-colors hover:text-foreground"
+                          >
+                            <ChevronUp className="size-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            tabIndex={-1}
+                            aria-label="Decrease total win"
+                            onClick={() => stepTargetWin(-10)}
+                            className="text-muted-foreground transition-colors hover:text-foreground"
+                          >
+                            <ChevronDown className="size-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  {winDiff !== null && (
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1 self-end rounded-full px-2.5 py-1 text-xs font-bold",
-                        winDiff >= 0
-                          ? "bg-success/15 text-success"
-                          : "bg-destructive/15 text-destructive",
-                      )}
-                      title="Difference between your budget and the balanced Total win"
-                    >
-                      {winDiff >= 0 ? (
-                        <ArrowUp className="size-3.5" />
-                      ) : (
-                        <ArrowDown className="size-3.5" />
-                      )}
-                      {Math.abs(winDiff).toFixed(1)}%
-                    </span>
-                  )}
                 </div>
 
                 {/*
