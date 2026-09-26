@@ -794,7 +794,10 @@ function CalculatorPage() {
                             tabIndex={-1}
                             aria-label="Increase total win"
                             onClick={() => stepTargetWin(1)}
-                            className="text-muted-foreground transition-colors hover:text-foreground"
+                            disabled={
+                              maxWin !== null && toNumber(targetWin) >= maxWin - 1e-9
+                            }
+                            className="text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
                           >
                             <ChevronUp className="size-3.5" />
                           </button>
@@ -810,6 +813,15 @@ function CalculatorPage() {
                         </div>
                       </div>
                     </div>
+                    {maxWin !== null &&
+                      toNumber(targetWin) > 0 &&
+                      toNumber(targetWin) >= maxWin - 1e-9 && (
+                        <p className="flex items-center gap-1 text-[11px] font-medium text-warning-foreground">
+                          <AlertTriangle className="size-3 shrink-0" />
+                          Limit reached — this budget can deliver at most{" "}
+                          {fmt(Math.floor(maxWin * 100) / 100)} at these odds
+                        </p>
+                      )}
                   </div>
                 </div>
 
