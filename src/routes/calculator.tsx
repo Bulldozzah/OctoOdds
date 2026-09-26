@@ -759,7 +759,7 @@ function CalculatorPage() {
                             type="button"
                             tabIndex={-1}
                             aria-label="Increase total win"
-                            onClick={() => stepTargetWin(10)}
+                            onClick={() => stepTargetWin(1)}
                             className="text-muted-foreground transition-colors hover:text-foreground"
                           >
                             <ChevronUp className="size-3.5" />
@@ -768,7 +768,7 @@ function CalculatorPage() {
                             type="button"
                             tabIndex={-1}
                             aria-label="Decrease total win"
-                            onClick={() => stepTargetWin(-10)}
+                            onClick={() => stepTargetWin(-1)}
                             className="text-muted-foreground transition-colors hover:text-foreground"
                           >
                             <ChevronDown className="size-3.5" />
