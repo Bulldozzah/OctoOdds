@@ -816,7 +816,7 @@ function CalculatorPage() {
                     {maxWin !== null &&
                       toNumber(targetWin) > 0 &&
                       toNumber(targetWin) >= maxWin - 1e-9 && (
-                        <p className="flex items-center gap-1 text-[11px] font-medium text-warning-foreground">
+                        <p className="flex items-center gap-1 text-[11px] font-medium text-destructive">
                           <AlertTriangle className="size-3 shrink-0" />
                           Limit reached — this budget can deliver at most{" "}
                           {fmt(Math.floor(maxWin * 100) / 100)} at these odds
