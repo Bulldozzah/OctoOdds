@@ -49,7 +49,7 @@ export function AuthSwitch({
         /* The lockup is black-on-transparent, so it needs lifting off the
            purple gradient rather than blending into it. */
         .auth-switch .as-brand-logo {
-          display: block; height: 84px; width: auto;
+          display: block; height: 140px; width: auto;
           filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.3));
         }
         .auth-switch .as-brand-tagline {
@@ -165,7 +165,7 @@ export function AuthSwitch({
 
         @media (max-width: 870px) {
           .auth-switch .as-container { min-height: 700px; height: calc(100vh - 140px); }
-          .auth-switch .as-brand-logo { height: 58px; }
+          .auth-switch .as-brand-logo { height: 90px; }
           .auth-switch .as-brand-tagline { font-size: 0.75rem; }
           .auth-switch .signin-signup {
             width: 100%; top: 95%; transform: translate(-50%, -100%); transition: 1s 0.8s ease-in-out;
