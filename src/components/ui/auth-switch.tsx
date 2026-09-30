@@ -33,7 +33,7 @@ export function AuthSwitch({
       <style>{`
         .auth-switch {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: #fff;
           min-height: 100vh;
           display: flex;
           flex-direction: column;
