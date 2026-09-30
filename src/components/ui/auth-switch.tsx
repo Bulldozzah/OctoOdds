@@ -44,15 +44,10 @@ export function AuthSwitch({
         }
         .auth-switch .as-brand {
           display: flex; flex-direction: column; align-items: center; gap: 6px;
-          background: #fff; color: #111; text-align: center;
-          padding: 18px 28px; border-radius: 18px;
-          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+          color: #111; text-align: center;
         }
-        /* The lockup is black-on-transparent, so it needs lifting off the
-           purple gradient rather than blending into it. */
         .auth-switch .as-brand-logo {
           display: block; height: 140px; width: auto;
-          filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.3));
         }
         .auth-switch .as-brand-tagline {
           display: block;
