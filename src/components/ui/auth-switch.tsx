@@ -205,8 +205,7 @@ export function AuthSwitch({
       `}</style>
 
       <div className="as-brand">
-        <img src="/octoodds-logo.png" alt="OctoOdds" className="as-brand-logo" />
-        <span className="as-brand-tagline">Even the Odds</span>
+        <img src="/octoodds-login-lockup.png" alt="OctoOdds" className="as-brand-logo" />
       </div>
 
       <div className={cn("as-container", isSignUp && "sign-up-mode")}>
