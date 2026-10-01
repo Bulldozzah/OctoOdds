@@ -989,55 +989,107 @@ function ScannerPage() {
           {/* ---------------------------------------------- controls column */}
           <div className="space-y-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
             <Card title="Scan settings">
-              {scanTab === "league" ? (
-                <div className="space-y-1.5">
-                  <Label>League</Label>
-                  <Select value={league} onValueChange={setLeague} disabled={!hasKey}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={hasKey ? "Loading leagues…" : "EPL"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sportLeagues.map((l) => (
-                        <SelectItem key={l.key} value={l.key}>
-                          {l.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              ) : (
-                <div className="space-y-1.5">
-                  <Label htmlFor="scan-date">Match date</Label>
-                  <Input
-                    id="scan-date"
-                    type="date"
-                    value={scanDate}
-                    // Past days are unscannable, not merely empty — see scanByDate.
-                    min={today || undefined}
-                    onChange={(e) => setScanDate(e.target.value)}
-                    disabled={!hasKey}
-                  />
-                </div>
-              )}
+              <div className={cn("grid gap-4", activeGames && "sm:grid-cols-2")}>
+                <div>
+                  {scanTab === "league" ? (
+                    <div className="space-y-1.5">
+                      <Label>League</Label>
+                      <Select value={league} onValueChange={setLeague} disabled={!hasKey}>
+                        <SelectTrigger>
+                          <SelectValue placeholder={hasKey ? "Loading leagues…" : "EPL"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {sportLeagues.map((l) => (
+                            <SelectItem key={l.key} value={l.key}>
+                              {l.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5">
+                      <Label htmlFor="scan-date">Match date</Label>
+                      <Input
+                        id="scan-date"
+                        type="date"
+                        value={scanDate}
+                        // Past days are unscannable, not merely empty — see scanByDate.
+                        min={today || undefined}
+                        onChange={(e) => setScanDate(e.target.value)}
+                        disabled={!hasKey}
+                      />
+                    </div>
+                  )}
 
-              <div className="mt-3 space-y-1.5">
-                <Label htmlFor="min-profit">Minimum profit %</Label>
-                <Input
-                  id="min-profit"
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  value={minPct}
-                  onChange={(e) => setMinPct(e.target.value)}
-                />
+                  <div className="mt-3 space-y-1.5">
+                    <Label htmlFor="min-profit">Minimum profit %</Label>
+                    <Input
+                      id="min-profit"
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      value={minPct}
+                      onChange={(e) => setMinPct(e.target.value)}
+                    />
+                  </div>
+
+                  {scanTab === "date" && scanDate === today && (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Today only covers kickoffs still ahead — games already under way are no
+                      longer priced, so a rescan later returns fewer of them.
+                    </p>
+                  )}
+                </div>
+
+                {activeGames && (
+                  <div
+                    className="space-y-1.5 border-t border-border pt-4 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0"
+                    title="Only combine games kicking off inside this local-time window"
+                  >
+                    <Label>Kickoff time</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="from-time">From</Label>
+                        <Input
+                          id="from-time"
+                          type="time"
+                          value={timeFrom}
+                          onChange={(e) => setTimeFrom(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="to-time">To</Label>
+                        <Input
+                          id="to-time"
+                          type="time"
+                          value={timeTo}
+                          onChange={(e) => setTimeTo(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    {timeFrom && timeTo && timeFrom > timeTo && (
+                      <p className="mt-2 text-xs text-destructive">
+                        The window ends before it starts, so nothing matches. Windows do not wrap
+                        past midnight.
+                      </p>
+                    )}
+                    {(timeFrom || timeTo) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2 w-full"
+                        onClick={() => {
+                          setTimeFrom("");
+                          setTimeTo("");
+                        }}
+                      >
+                        Clear time
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
-
-              {scanTab === "date" && scanDate === today && (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Today only covers kickoffs still ahead — games already under way are no longer
-                  priced, so a rescan later returns fewer of them.
-                </p>
-              )}
             </Card>
 
             {scanTab === "date" && (
@@ -1176,51 +1228,6 @@ function ScannerPage() {
                     )}
                   </Card>
                 )}
-
-                <Card
-                  title="Kickoff time"
-                  hint="Only combine games kicking off inside this local-time window"
-                >
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="from-time">From</Label>
-                      <Input
-                        id="from-time"
-                        type="time"
-                        value={timeFrom}
-                        onChange={(e) => setTimeFrom(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="to-time">To</Label>
-                      <Input
-                        id="to-time"
-                        type="time"
-                        value={timeTo}
-                        onChange={(e) => setTimeTo(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  {timeFrom && timeTo && timeFrom > timeTo && (
-                    <p className="mt-2 text-xs text-destructive">
-                      The window ends before it starts, so nothing matches. Windows do not wrap past
-                      midnight.
-                    </p>
-                  )}
-                  {(timeFrom || timeTo) && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-2 w-full"
-                      onClick={() => {
-                        setTimeFrom("");
-                        setTimeTo("");
-                      }}
-                    >
-                      Clear time
-                    </Button>
-                  )}
-                </Card>
 
                 {poolTrimmed && (
                   <p className="-mt-2 text-xs text-muted-foreground">
