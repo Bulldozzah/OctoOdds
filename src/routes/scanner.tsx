@@ -283,33 +283,6 @@ function Card({
   );
 }
 
-function Chip({
-  active,
-  children,
-  onClick,
-  title,
-}: {
-  active?: boolean;
-  children: React.ReactNode;
-  onClick?: () => void;
-  title?: string;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      title={title}
-      className={cn(
-        "rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
-        active
-          ? "border-primary bg-sky-soft text-sky-deep"
-          : "border-border text-muted-foreground hover:bg-muted",
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-
 function ScannerPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
@@ -959,6 +932,49 @@ function ScannerPage() {
             </SelectContent>
           </Select>
 
+          <Select value={String(teamCount)} onValueChange={(v) => setTeamCount(Number(v))}>
+            <SelectTrigger
+              className="w-full sm:w-[150px]"
+              aria-label="Combine"
+              title="How many games to combine per slip"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[2, 3, 4].map((n) => (
+                <SelectItem key={n} value={String(n)}>
+                  {n} teams ({Math.pow(3, n)})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={activePatterns[0] ?? "any"}
+            onValueChange={(v) =>
+              setExclFilter((cur) => {
+                const others = cur.filter((k) => k.length !== teamCount);
+                return v === "any" ? others : [...others, v];
+              })
+            }
+          >
+            <SelectTrigger
+              className="w-full sm:w-[200px]"
+              aria-label="Uncovered scenario"
+              title="Which outcomes the one uncovered scenario may pair — e.g. W+L keeps only combos that lose when one side wins and the other loses"
+            >
+              <SelectValue placeholder="Uncovered scenario" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">Any uncovered scenario</SelectItem>
+              {exclPatternOptions(teamCount).map((k) => (
+                <SelectItem key={k} value={k} title={patternWords(k)}>
+                  {patternLabel(k)} · {patternCounts[k] ?? 0}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           {activeGames && (
             <span aria-live="polite" className="text-sm text-muted-foreground sm:ml-auto">
               <strong className="text-lg font-extrabold text-primary">{totalResults}</strong>{" "}
@@ -1206,28 +1222,13 @@ function ScannerPage() {
                   )}
                 </Card>
 
-                <Card title="Combine">
-                  <div className="grid grid-cols-3 gap-2">
-                    {[2, 3, 4].map((n) => (
-                      <Button
-                        key={n}
-                        className="h-auto min-w-0 whitespace-normal py-2 text-center text-xs"
-                        variant={teamCount === n ? "default" : "outline"}
-                        onClick={() => setTeamCount(n)}
-                        title="How many games to combine per slip"
-                      >
-                        {n} teams ({Math.pow(3, n)})
-                      </Button>
-                    ))}
-                  </div>
-                  {poolTrimmed && (
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Searching the {searchGames?.length} earliest of {activeGames.length} games —{" "}
-                      {teamCount}-game combos grow as C(n,{teamCount}), so the pool is capped to
-                      keep the page responsive.
-                    </p>
-                  )}
-                </Card>
+                {poolTrimmed && (
+                  <p className="-mt-2 text-xs text-muted-foreground">
+                    Searching the {searchGames?.length} earliest of {activeGames.length} games —{" "}
+                    {teamCount}-game combos grow as C(n,{teamCount}), so the pool is capped to keep
+                    the page responsive.
+                  </p>
+                )}
 
                 <Card title="Odds source">
                   <div className="grid grid-cols-2 gap-2">
@@ -1248,40 +1249,6 @@ function ScannerPage() {
                       Best odds across books
                     </Button>
                   </div>
-                </Card>
-
-                <Card title="Uncovered scenario">
-                  <div className="flex flex-wrap gap-1.5">
-                    <Chip
-                      active={activePatterns.length === 0}
-                      onClick={() =>
-                        setExclFilter((cur) => cur.filter((k) => k.length !== teamCount))
-                      }
-                      title="No filter — show every qualifying combo, whatever scenario is left uncovered"
-                    >
-                      Any
-                    </Chip>
-                    {exclPatternOptions(teamCount).map((k) => (
-                      <Chip
-                        key={k}
-                        active={activePatterns.includes(k)}
-                        onClick={() =>
-                          setExclFilter((cur) =>
-                            cur.includes(k) ? cur.filter((x) => x !== k) : [...cur, k],
-                          )
-                        }
-                        title={`Only combos whose uncovered scenario is ${patternWords(k)} — in either game order. Guaranteed full covers always stay.`}
-                      >
-                        {patternLabel(k)}
-                        <span className="ml-1 opacity-60">{patternCounts[k] ?? 0}</span>
-                      </Chip>
-                    ))}
-                  </div>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Which outcomes the one uncovered scenario may pair — e.g. W+L keeps only combos
-                    that lose when one side wins and the other loses. Which game sits in the A slot
-                    is an accident of fetch order, so W+L and L+W are one pattern.
-                  </p>
                 </Card>
 
                 <Card title="Sort">
