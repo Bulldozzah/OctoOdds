@@ -881,7 +881,6 @@ function ScannerPage() {
             ))}
           </div>
 
-
           <Select value={books} onValueChange={setBooks} disabled={!hasKey}>
             <SelectTrigger className="w-full sm:w-[210px]" aria-label="Bookmakers">
               <SelectValue />
@@ -956,6 +955,27 @@ function ScannerPage() {
               {exclPatternOptions(teamCount).map((k) => (
                 <SelectItem key={k} value={k} title={patternWords(k)}>
                   {patternLabel(k)} · {patternCounts[k] ?? 0}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
+            <SelectTrigger className="w-full sm:w-[180px]" aria-label="Sort">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SORTS.map((s) => (
+                <SelectItem
+                  key={s.key}
+                  value={s.key}
+                  title={
+                    s.key === "profit"
+                      ? "Order by profit on covered scenarios, highest first"
+                      : "Order by lowest chance of the excluded scenario hitting"
+                  }
+                >
+                  {s.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -1233,25 +1253,6 @@ function ScannerPage() {
                   </div>
                 </Card>
 
-                <Card title="Sort">
-                  <div className="grid grid-cols-2 gap-2">
-                    {SORTS.map((s) => (
-                      <Button
-                        key={s.key}
-                        className="h-auto min-w-0 whitespace-normal py-2 text-center text-xs"
-                        variant={sortBy === s.key ? "default" : "outline"}
-                        onClick={() => setSortBy(s.key)}
-                        title={
-                          s.key === "profit"
-                            ? "Order by profit on covered scenarios, highest first"
-                            : "Order by lowest chance of the excluded scenario hitting"
-                        }
-                      >
-                        {s.label}
-                      </Button>
-                    ))}
-                  </div>
-                </Card>
               </>
             )}
           </div>
