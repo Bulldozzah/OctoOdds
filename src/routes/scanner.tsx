@@ -881,20 +881,6 @@ function ScannerPage() {
             ))}
           </div>
 
-          {/* Every sport here prices as 3-way W/D/L. */}
-          <div className="flex flex-wrap gap-1">
-            {SPORTS.map((s) => (
-              <Button
-                key={s.key}
-                size="sm"
-                variant={sport === s.key ? "default" : "outline"}
-                disabled={!hasKey}
-                onClick={() => setSport(s.key)}
-              >
-                {s.label}
-              </Button>
-            ))}
-          </div>
 
           <Select value={books} onValueChange={setBooks} disabled={!hasKey}>
             <SelectTrigger className="w-full sm:w-[210px]" aria-label="Bookmakers">
