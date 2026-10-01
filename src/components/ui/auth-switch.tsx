@@ -39,7 +39,7 @@ export function AuthSwitch({
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          gap: 18px;
+          gap: 8px;
           padding: 20px;
         }
         .auth-switch .as-brand {
@@ -47,7 +47,7 @@ export function AuthSwitch({
           color: #111; text-align: center;
         }
         .auth-switch .as-brand-logo {
-          display: block; height: 180px; width: auto;
+          display: block; height: 240px; width: auto;
         }
         .auth-switch .as-brand-tagline {
           display: block;
@@ -162,7 +162,7 @@ export function AuthSwitch({
 
         @media (max-width: 870px) {
           .auth-switch .as-container { min-height: 700px; height: calc(100vh - 140px); }
-          .auth-switch .as-brand-logo { height: 120px; }
+          .auth-switch .as-brand-logo { height: 160px; }
           .auth-switch .as-brand-tagline { font-size: 0.75rem; }
           .auth-switch .signin-signup {
             width: 100%; top: 95%; transform: translate(-50%, -100%); transition: 1s 0.8s ease-in-out;
