@@ -41,30 +41,20 @@ export function SidebarTitleSection({
   title: string;
   subtitle?: string;
 }) {
+  if (!open) return null;
+
   return (
     <div className="mb-6 border-b border-sidebar-border pb-4">
       <div className="flex cursor-default items-center justify-between rounded-md p-2 transition-colors hover:bg-sidebar-accent/60">
-        <div className="flex items-center gap-3">
-          <div className="grid size-10 shrink-0 place-content-center overflow-hidden rounded-lg bg-gradient-sky shadow-sm">
-            <img
-              src="/octoodds-logo.png"
-              alt=""
-              aria-hidden="true"
-              className="size-7 scale-[1.9] object-contain"
-            />
-          </div>
-          {open && (
-            <div className="min-w-0 transition-opacity duration-200">
-              <span className="block truncate text-sm font-semibold text-sidebar-foreground">
-                {title}
-              </span>
-              {subtitle && (
-                <span className="block truncate text-xs text-muted-foreground">{subtitle}</span>
-              )}
-            </div>
+        <div className="min-w-0 transition-opacity duration-200">
+          <span className="block truncate text-sm font-semibold text-sidebar-foreground">
+            {title}
+          </span>
+          {subtitle && (
+            <span className="block truncate text-xs text-muted-foreground">{subtitle}</span>
           )}
         </div>
-        {open && <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />}
+        <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
       </div>
     </div>
   );
