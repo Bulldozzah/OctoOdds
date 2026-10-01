@@ -39,12 +39,12 @@ export function AuthSwitch({
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          gap: 8px;
+          gap: 0px;
           padding: 20px;
         }
         .auth-switch .as-brand {
           display: flex; flex-direction: column; align-items: center; gap: 6px;
-          color: #111; text-align: center;
+          color: #111; text-align: center; margin-bottom: -24px;
         }
         .auth-switch .as-brand-logo {
           display: block; height: 240px; width: auto;
