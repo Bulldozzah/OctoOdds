@@ -342,12 +342,15 @@ function ScannerPage() {
   const [timeFrom, setTimeFrom] = useState("");
   const [timeTo, setTimeTo] = useState("");
 
-  const [scanTab, setScanTab] = useState<ScanTab>("league");
+  const [scanTab, setScanTab] = useState<ScanTab>("date");
   // Left empty for the server render: "today" depends on the viewer's timezone,
   // so seeding it here would disagree with the client and break hydration.
   const [scanDate, setScanDate] = useState("");
   const [today, setToday] = useState("");
-  const [selLeagues, setSelLeagues] = useState<string[]>(["soccer_epl"]);
+  // Empty until the league list loads, at which point every in-season league
+  // is selected by default (see the fetchLeagues effect below) unless a cache
+  // restore already supplied an explicit selection.
+  const [selLeagues, setSelLeagues] = useState<string[]>([]);
   const [dateGames, setDateGames] = useState<Game[] | null>(null);
   // How many games the last date scan actually fetched, before the cap — so
   // the summary can admit when it is scanning a subset.
@@ -452,7 +455,10 @@ function ScannerPage() {
         setLeague((cur) => (ls.length && !ls.some((l) => l.key === cur) ? ls[0].key : cur));
         setSelLeagues((cur) => {
           const kept = cur.filter((k) => ls.some((l) => l.key === k));
-          return kept.length ? kept : ls.length ? [ls[0].key] : [];
+          // No valid prior selection (first visit, or every cached league
+          // disappeared after a sport switch) — default to scanning every
+          // in-season league rather than making the user tick them one by one.
+          return kept.length ? kept : ls.map((l) => l.key);
         });
       })
       .catch((e: Error) => setError(`Could not load leagues: ${e.message}`));
@@ -1020,10 +1026,30 @@ function ScannerPage() {
 
             {scanTab === "date" && (
               <Card title="League selection">
-                <p className="mb-2 text-xs text-muted-foreground">
-                  {selLeagues.length} selected · ~{scanCost} credit{scanCost === 1 ? "" : "s"} per
-                  scan
-                </p>
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                  <p className="text-xs text-muted-foreground">
+                    {selLeagues.length} selected · ~{scanCost} credit{scanCost === 1 ? "" : "s"} per
+                    scan
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      className="text-xs font-medium text-primary hover:underline disabled:pointer-events-none disabled:opacity-50"
+                      disabled={sportLeagues.length === 0}
+                      onClick={() => setSelLeagues(sportLeagues.map((l) => l.key))}
+                    >
+                      Select all
+                    </button>
+                    <button
+                      type="button"
+                      className="text-xs font-medium text-muted-foreground hover:underline disabled:pointer-events-none disabled:opacity-50"
+                      disabled={selLeagues.length === 0}
+                      onClick={() => setSelLeagues([])}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
                 {sportLeagues.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
                     {hasKey ? "Loading in-season leagues…" : "League list needs an API key."}
