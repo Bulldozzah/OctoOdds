@@ -134,7 +134,6 @@ function CalculatorPage() {
       (s.location.state as { loadBet?: LoadableBet & { id?: string } } | undefined)?.loadBet,
   });
 
-  const [sport, setSport] = useState(SPORTS[0].id);
   const [tax, setTax] = useState("0.0");
   const [targetStake, setTargetStake] = useState("100");
   const [activeTeams, setActiveTeams] = useState<TeamTab>(2);
@@ -160,7 +159,7 @@ function CalculatorPage() {
 
   const rows = rowsByTeams[activeTeams];
   const teamNames = namesByTeams[activeTeams];
-  const sportMeta = SPORTS.find((s) => s.id === sport) ?? SPORTS[0];
+  const sportMeta = SPORTS[0];
   const side = (n: number) => sideWord(sportMeta, n);
 
   const { totalStake, remaining, results } = useMemo(
@@ -523,19 +522,6 @@ function CalculatorPage() {
                 {TEAM_TABS.map((n) => (
                   <SelectItem key={n} value={String(n)}>
                     {n} {side(n)} · {Math.pow(3, n)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={sport} onValueChange={setSport}>
-              <SelectTrigger className="w-full sm:w-[170px]" aria-label="Sport">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SPORTS.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {s.icon} {s.label}
                   </SelectItem>
                 ))}
               </SelectContent>
