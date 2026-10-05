@@ -678,28 +678,24 @@ function CalculatorPage() {
                         />
                         <div className="flex shrink-0 gap-1.5">
                           {OUTCOMES.map((o, k) => (
-                            <Input
-                              key={o}
-                              id={`odds-${t}-${o}`}
-                              aria-label={`${OUTCOME_LABELS[o]} odds`}
-                              title={`${OUTCOME_LABELS[o]} odds`}
-                              className={cn(
-                                "h-9 w-14 px-1.5 text-center text-sm tabular-nums",
-                                o === "W" &&
-                                  "bg-green-500/10 border-green-500/30 focus-visible:ring-green-500",
-                                o === "D" &&
-                                  "bg-amber-500/10 border-amber-500/30 focus-visible:ring-amber-500",
-                                o === "L" &&
-                                  "bg-red-500/10 border-red-500/30 focus-visible:ring-red-500",
-                              )}
-                              inputMode="decimal"
-                              value={oneEvent ? rows[k].odds : po[o]}
-                              onChange={(e) =>
-                                oneEvent
-                                  ? updateRow(k, "odds", e.target.value)
-                                  : setOutcomeOdd(t, o, e.target.value)
-                              }
-                            />
+                            <div key={o} className="relative">
+                              <span className="pointer-events-none absolute inset-y-0 left-1.5 flex items-center text-[10px] font-semibold text-muted-foreground">
+                                {o}
+                              </span>
+                              <Input
+                                id={`odds-${t}-${o}`}
+                                aria-label={`${OUTCOME_LABELS[o]} odds`}
+                                title={`${OUTCOME_LABELS[o]} odds`}
+                                className="h-9 w-16 pl-5 pr-1.5 text-right text-sm tabular-nums"
+                                inputMode="decimal"
+                                value={oneEvent ? rows[k].odds : po[o]}
+                                onChange={(e) =>
+                                  oneEvent
+                                    ? updateRow(k, "odds", e.target.value)
+                                    : setOutcomeOdd(t, o, e.target.value)
+                                }
+                              />
+                            </div>
                           ))}
                         </div>
                       </div>
