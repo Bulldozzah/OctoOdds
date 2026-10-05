@@ -86,7 +86,7 @@ export function AuthSwitch({
           border-radius: 55px; display: grid; grid-template-columns: 15% 85%;
           padding: 0 0.4rem; position: relative; transition: 0.3s;
         }
-        .auth-switch .input-field:focus-within { background-color: #e8e8e8; box-shadow: 0 0 0 2px #48a9dc; }
+        .auth-switch .input-field:focus-within { background-color: #e8e8e8; box-shadow: 0 0 0 2px #1a3d67; }
         .auth-switch .input-field i {
           text-align: center; line-height: 55px; color: #666;
           transition: 0.5s; font-size: 1.1rem; font-style: normal;
@@ -99,20 +99,20 @@ export function AuthSwitch({
         .auth-switch .as-forgot {
           max-width: 380px; width: 100%; text-align: right; padding: 2px 1rem 0 0; font-size: 0.85rem;
         }
-        .auth-switch .as-forgot a { color: #48a9dc; font-weight: 500; text-decoration: none; }
+        .auth-switch .as-forgot a { color: #1a3d67; font-weight: 500; text-decoration: none; }
         .auth-switch .as-forgot a:hover { text-decoration: underline; }
         .auth-switch .btn {
-          width: 150px; background-color: #48a9dc; border: none; outline: none; height: 49px;
+          width: 150px; background-color: #1a3d67; border: none; outline: none; height: 49px;
           border-radius: 49px; color: #fff; text-transform: uppercase; font-weight: 600;
           margin: 10px 0; cursor: pointer; transition: 0.5s; font-size: 0.9rem;
         }
         .auth-switch .btn:hover {
-          background-color: #2f8ab8; transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(72, 169, 220, 0.4);
+          background-color: #1a3d67; transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(26, 61, 103, 0.4);
         }
         .auth-switch .btn:disabled {
           opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none;
-          background-color: #48a9dc;
+          background-color: #1a3d67;
         }
         .auth-switch .panels-container {
           position: absolute; height: 100%; width: 100%; top: 0; left: 0;
@@ -137,7 +137,7 @@ export function AuthSwitch({
         .auth-switch .right-panel .content { transform: translateX(800px); }
         .auth-switch .as-container:before {
           content: ""; position: absolute; height: 2000px; width: 2000px; top: -10%; right: 48%;
-          transform: translateY(-50%); background: linear-gradient(-45deg, #48a9dc 0%, #2f8ab8 100%);
+          transform: translateY(-50%); background: linear-gradient(-45deg, #1a3d67 0%, #1a3d67 100%);
           transition: 1.8s ease-in-out; border-radius: 50%; z-index: 6;
         }
         .auth-switch .as-container.sign-up-mode:before { transform: translate(100%, -50%); right: 52%; }
