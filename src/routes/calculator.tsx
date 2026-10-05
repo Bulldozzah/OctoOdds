@@ -678,24 +678,21 @@ function CalculatorPage() {
                         />
                         <div className="flex shrink-0 gap-1.5">
                           {OUTCOMES.map((o, k) => (
-                            <div key={o} className="relative">
-                              <span className="pointer-events-none absolute inset-y-0 left-1.5 flex items-center text-[10px] font-semibold text-muted-foreground">
-                                {o}
-                              </span>
-                              <Input
-                                id={`odds-${t}-${o}`}
-                                aria-label={`${OUTCOME_LABELS[o]} odds`}
-                                title={`${OUTCOME_LABELS[o]} odds`}
-                                className="h-9 w-16 pl-5 pr-1.5 text-right text-sm tabular-nums"
-                                inputMode="decimal"
-                                value={oneEvent ? rows[k].odds : po[o]}
-                                onChange={(e) =>
-                                  oneEvent
-                                    ? updateRow(k, "odds", e.target.value)
-                                    : setOutcomeOdd(t, o, e.target.value)
-                                }
-                              />
-                            </div>
+                            <Input
+                              key={o}
+                              id={`odds-${t}-${o}`}
+                              aria-label={`${OUTCOME_LABELS[o]} odds`}
+                              title={`${OUTCOME_LABELS[o]} odds`}
+                              placeholder={o}
+                              className="h-9 w-16 px-2 text-center text-sm tabular-nums"
+                              inputMode="decimal"
+                              value={oneEvent ? rows[k].odds : po[o]}
+                              onChange={(e) =>
+                                oneEvent
+                                  ? updateRow(k, "odds", e.target.value)
+                                  : setOutcomeOdd(t, o, e.target.value)
+                              }
+                            />
                           ))}
                         </div>
                       </div>
