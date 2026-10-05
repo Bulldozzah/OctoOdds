@@ -678,26 +678,28 @@ function CalculatorPage() {
                         />
                         <div className="flex shrink-0 gap-1.5">
                           {OUTCOMES.map((o, k) => (
-                            <div key={o} className="flex items-center gap-1">
-                              <label
-                                className="text-xs text-muted-foreground"
-                                htmlFor={`odds-${t}-${o}`}
-                                title={`Odds for ${OUTCOME_LABELS[o]}`}
-                              >
-                                {o}
-                              </label>
-                              <Input
-                                id={`odds-${t}-${o}`}
-                                className="h-9 w-14 px-1.5 text-center text-sm tabular-nums"
-                                inputMode="decimal"
-                                value={oneEvent ? rows[k].odds : po[o]}
-                                onChange={(e) =>
-                                  oneEvent
-                                    ? updateRow(k, "odds", e.target.value)
-                                    : setOutcomeOdd(t, o, e.target.value)
-                                }
-                              />
-                            </div>
+                            <Input
+                              key={o}
+                              id={`odds-${t}-${o}`}
+                              aria-label={`${OUTCOME_LABELS[o]} odds`}
+                              title={`${OUTCOME_LABELS[o]} odds`}
+                              className={cn(
+                                "h-9 w-14 px-1.5 text-center text-sm tabular-nums",
+                                o === "W" &&
+                                  "bg-green-500/10 border-green-500/30 focus-visible:ring-green-500",
+                                o === "D" &&
+                                  "bg-amber-500/10 border-amber-500/30 focus-visible:ring-amber-500",
+                                o === "L" &&
+                                  "bg-red-500/10 border-red-500/30 focus-visible:ring-red-500",
+                              )}
+                              inputMode="decimal"
+                              value={oneEvent ? rows[k].odds : po[o]}
+                              onChange={(e) =>
+                                oneEvent
+                                  ? updateRow(k, "odds", e.target.value)
+                                  : setOutcomeOdd(t, o, e.target.value)
+                              }
+                            />
                           ))}
                         </div>
                       </div>
