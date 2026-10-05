@@ -74,7 +74,7 @@ export const buildScenarios = (numTeams: number): string[] => {
 };
 
 export const makeRows = (numTeams: number): Row[] =>
-  buildScenarios(numTeams).map((name) => ({ name, stake: "0", odds: "0" }));
+  buildScenarios(numTeams).map((name) => ({ name, stake: "0", odds: "" }));
 
 export const makeNames = (numTeams: number): string[] => Array.from({ length: numTeams }, () => "");
 
